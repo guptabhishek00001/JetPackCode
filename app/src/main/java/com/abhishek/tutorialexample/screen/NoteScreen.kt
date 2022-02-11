@@ -96,7 +96,7 @@ fun NoteScreen(
 
         Spacer(modifier = Modifier.padding(10.dp))
 
-        LazyColumn{
+        LazyColumn(reverseLayout = true){
 
             items(note){notes->
                 NoteRow(note = notes, onNoteClicked ={

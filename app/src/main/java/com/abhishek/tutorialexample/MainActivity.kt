@@ -5,21 +5,18 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import com.abhishek.tutorialexample.data.NoteDataSorce
-import com.abhishek.tutorialexample.model.NoteModel
-import com.abhishek.tutorialexample.screen.NoteScreen
+import androidx.lifecycle.ViewModel
 import com.abhishek.tutorialexample.ui.theme.TutorialExampleTheme
+import com.abhishek.tutorialexample.screen.NoteScreen
+import androidx.lifecycle.viewmodel.compose.viewModel as viewModel
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -29,24 +26,28 @@ class MainActivity : ComponentActivity() {
         setContent {
             TutorialExampleTheme {
                 // A surface container using the 'background' color from the theme
-
-                val context = LocalContext.current
-
-
-                var notes = remember {
-                    mutableStateListOf<NoteModel>()
-                }
                 Surface(color = MaterialTheme.colors.background) {
-                    NoteScreen(note = notes, onAddNotes = {
-                        notes.add(it)
-                    }, onRemoveNotes = {
-                        Toast.makeText(context, "clikced${it.name}", Toast.LENGTH_LONG).show()
-                        notes.remove(it)
-                    })
+
+                    val viewModel:NoteViewModel by viewModels()
+                    NotesApi(viewModel)
+
                 }
             }
         }
     }
+}
+
+@ExperimentalComposeUiApi
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun NotesApi(viewModel: NoteViewModel = viewModel()){
+
+    NoteScreen(note = viewModel.getAllNotes(), onAddNotes = {
+        viewModel.addNote(it)
+    }, onRemoveNotes = {
+        viewModel.deleteNote(it)
+    })
+
 }
 
 @Composable
